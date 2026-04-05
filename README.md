@@ -12,6 +12,10 @@ To run locally:
 py -m streamlit run app.py
 ```
 
+
+![alt text](image.png)
+![alt text](image-1.png)
+
 ## Analytical Approach
 
 Raw claim counts reflect population size and are not analytically meaningful for geographic comparison. All metrics are normalized by state-level Part D enrollment to produce per-capita rates, revealing true variation in prescribing access and disease burden.
