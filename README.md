@@ -33,13 +33,15 @@ This tool surfaces those signals for further investigation. Caution is required 
 ## Project Structure
 
 ```
-app.py                                       # Streamlit web application
+app.py                                           # Streamlit web application
 notebooks/
-├── 00_build_database.ipynb                  # Data ingestion — loads CSVs into SQLite
-├── 01_data_exploration.ipynb                # Dataset structure, coverage, suppression
-└── 02_case_study/
-    ├── 01_drug_selection.ipynb              # Methodology: drug selection and normalization
-    └── 02_geographic_map.ipynb             # Methodology: choropleth map construction
+├── 00_build_database.ipynb                      # Data ingestion — loads CSVs into SQLite
+├── 01_data_exploration.ipynb                    # Dataset structure, coverage, suppression
+├── 02_case_study/
+│   ├── 01_drug_selection.ipynb                  # Methodology: drug selection and normalization
+│   └── 02_geographic_map.ipynb                  # Methodology: choropleth map construction
+└── 03_antipsychotic_analysis/
+    └── 01_antipsychotic_explore.ipynb           # Hypothesis-driven geographic analysis
 ```
 
 ## Case Study: Lenalidomide (Revlimid)
@@ -48,13 +50,32 @@ Lenalidomide is an oral immunomodulatory agent used almost exclusively for multi
 
 **Interactive map:** [lenalidomide_map.html](notebooks/02_case_study/lenalidomide_map.html)
 
+## Hypothesis Testing: Antipsychotic Geographic Variation
+
+Antipsychotic prescribing shows notable geographic variation across U.S. states. This analysis investigates whether that variation is explained by rurality or socioeconomic factors using two external datasets.
+
+**Approach:** Antipsychotics are divided into three groups — oral generics, long-acting injectables (LAIs), and clozapine — and analyzed separately. Spearman correlations are computed between state-level prescribing rates and two candidate predictors: USDA Rural-Urban Continuum Codes (rurality) and CMS dual-eligibility rates (socioeconomic status).
+
+**Findings:**
+- Pairwise correlations between drug groups are moderate (r = 0.32 to 0.52), confirming that geographic variation is real but each group has distinct drivers
+- Rurality shows effectively zero correlation with prescribing rates across all three groups (r ≈ 0), rejecting the rural isolation hypothesis
+- Dual-eligibility rate also shows no significant correlation at the state level (r ≈ 0)
+- The null results point to state-level aggregation as too coarse to detect the underlying signal — county-level analysis would be required to test these hypotheses properly
+
+**External datasets used:**
+- USDA Rural-Urban Continuum Codes 2023 (county-level rurality classification)
+- CMS Medicare Monthly Enrollment 2023 (dual-eligibility counts by state)
+
 ## Data Sources
 
 **Medicare Part D Prescribers by Geography and Drug (2023)**
 CMS public use file — one row per drug per geographic unit, with total claims, beneficiaries, prescribers, and drug cost. Available at [data.cms.gov](https://data.cms.gov).
 
 **Medicare Monthly Enrollment (2023)**
-CMS state-level Part D enrollment counts used for per-capita normalization. Available at [data.cms.gov](https://data.cms.gov).
+CMS state-level Part D enrollment counts used for per-capita normalization and dual-eligibility analysis. Available at [data.cms.gov](https://data.cms.gov).
+
+**USDA Rural-Urban Continuum Codes (2023)**
+County-level rurality classification used to compute population-weighted state rurality index. Available at [ers.usda.gov](https://www.ers.usda.gov).
 
 Raw data files are excluded from this repository via `.gitignore` due to size.
 
