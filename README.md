@@ -6,6 +6,8 @@ A geographic disease burden surveillance tool built on Medicare Part D prescribi
 
 An interactive web application allows dynamic exploration of any drug in the dataset. Users select a drug by therapeutic category, toggle between claims per 100k enrollees and cost per enrollee, and view a choropleth map alongside state rankings.
 
+**Live app:** [medicare-prescriptions-geography-application.streamlit.app](https://medicare-prescriptions-geography-application-zck4gvqcmtyvgacnc.streamlit.app/)
+
 To run locally:
 
 ```bash
