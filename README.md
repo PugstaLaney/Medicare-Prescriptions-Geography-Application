@@ -13,8 +13,8 @@ py -m streamlit run app.py
 ```
 
 
-![alt text](image.png)
-![alt text](image-1.png)
+![App Screenshot](assets/image.png)
+![App Screenshot](assets/image-1.png)
 
 ## Analytical Approach
 
