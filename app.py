@@ -9,7 +9,7 @@ st.title("Medicare Part D Prescribing Map (2023)")
 st.caption("State-level prescribing rates normalized by Part D enrollment. Data source: CMS Medicare Part D Prescribers by Geography and Drug, 2023.")
 
 # ── Database connection ───────────────────────────────────────────────────────
-DB_PATH = r"C:\Users\palla\OneDrive\Documents\Coding Projects\CMS\database\cms.db"
+DB_PATH = "database/cms.db"
 
 @st.cache_resource
 def get_connection():
@@ -236,12 +236,22 @@ if selected_category == "All":
 else:
     filtered_drugs = [d for d in drug_list if drug_categories[d] == selected_category]
 
-default_drug = "Lenalidomide" if "Lenalidomide" in filtered_drugs else filtered_drugs[0]
+search = st.sidebar.text_input("Search Drug Name", placeholder="Type to filter...")
+
+if search:
+    searched_drugs = [d for d in filtered_drugs if search.lower() in d.lower()]
+    if not searched_drugs:
+        st.sidebar.warning("No matches — showing all drugs.")
+        searched_drugs = filtered_drugs
+else:
+    searched_drugs = filtered_drugs
+
+default_drug = "Lenalidomide" if "Lenalidomide" in searched_drugs else searched_drugs[0]
 
 selected_drug = st.sidebar.selectbox(
     "Select Drug (Generic Name)",
-    options=filtered_drugs,
-    index=filtered_drugs.index(default_drug)
+    options=searched_drugs,
+    index=searched_drugs.index(default_drug) if default_drug in searched_drugs else 0
 )
 
 metric = st.sidebar.radio(
@@ -313,10 +323,20 @@ fig = px.choropleth(
         "tot_benes": True,
         color_col: True
     },
-    labels={color_col: color_label}
+    labels={
+        color_col: color_label,
+        "tot_clms": "Total Claims",
+        "tot_benes": "Total Beneficiaries"
+    }
 )
 fig.update_layout(coloraxis_colorbar=dict(title=color_label), height=550)
 st.plotly_chart(fig, use_container_width=True)
+
+# Territories not rendered by Plotly's USA-states scope
+excluded = {"Puerto Rico", "Virgin Islands", "Guam", "Unknown"}
+top_state = df.loc[df[color_col].idxmax(), "state"]
+if top_state in excluded:
+    st.info(f"Note: {top_state} has the highest {color_label} for this drug but is not shown on the map. See the state rankings table below.")
 
 # ── Top / Bottom 10 table ─────────────────────────────────────────────────────
 st.subheader(f"State Rankings — {color_label}")
